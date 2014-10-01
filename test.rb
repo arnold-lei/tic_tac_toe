@@ -1,18 +1,15 @@
 require 'pry' 
+
 # 1 | 2 | 3 
 # - + - + -
 # 4 | 5 | 6 
 # - + - + -
 # 7 | 8 | 9 
 
+s = {1=>" ", 2=>" ", 3=>" ", 4=>" ", 5=>" ", 6=>" ", 7=>" ", 8=>" ", 9=>" "}
 choice = " "
 
-def space
-	s = {}
-	(1..9).each {|space| s[space] = ' '}
-	s
-end
-
+#Game Board
 def grid(s)
 	system 'clear'
 	puts " #{s[1]} | #{s[2]} | #{s[3]} " 
@@ -22,17 +19,15 @@ def grid(s)
 	puts " #{s[7]} | #{s[8]} | #{s[9]} " 
 end
 
-def player_choice(choice, s)
-	puts "Please choose your next move (1-9)"
-	choice = gets.chomp
-	s[choice] = 'x'
+#Users chooses position for where they play their move
+def player_move(choice, s)
+	puts "Choose a number"
+	choice = gets.chomp.to_i
+	s[choice] = "x"
+	puts s
 end
 
 loop do 
-	grid(space)
-	player_choice(choice, s)
+	grid(s)
+	player_move(choice, s)
 end
-
-
-
-
