@@ -1,82 +1,127 @@
-require 'pry' 
+#Create a grid with empty spaces that can be filled
+#Assign user to X and computer to O
+#Get Xs from the user and have them place them at some EMPTY point in the grid
+#Have the Os randomly generate from the computer and goes on and empty point in the grid
+#Wash, rinse, repeat (loop) UNTIL...
+#If 3 xs or 3 os are in a row, then one of the players wins or all squares are taken (tie)
+#If there's a winner, show the winner / else state it's a tie
 
-# 1 | 2 | 3 
-# - + - + -
-# 4 | 5 | 6 
-# - + - + -
-# 7 | 8 | 9 
+#loop until a winner or all squares are taken
+  #player1 picks an empty square
+  #check for a winner – this is variable
+  #player2 picks an empty square
+  #check for a winner
 
-choice = "X"
-ai = "O"
+#if there's a winner
+  #show the winner
+#or else
+  #it's a tie
 
-def space
-	s = {}
-	(1..9).each{|space| s[space] = " "}
-	s
+#puts "Welcome to tic tac toe, would you like to be X or O? Pick one (X/O)"
+
+#user_symbol = gets.chomp.upcase
+
+#if user_symbol == 'X'
+#  computer_symbol = 'O'
+#else
+#  computer_symbol = 'X'
+#end
+#grid = {1=>" ",2=>" ",3=>" ",4=>" ",5=>" ",6=>" ",7=>" ",8=>" ",9=>" "}
+
+require 'pry'
+
+def init_grid
+  g = {}
+  (1..9).each {|place| g[place] = ' '}
+  g
 end
 
-def win(s) 
-	taken = s.select {|k,v| v == "x" || v == "O" }
-	player = taken.select { |k,v| v == "x"}.keys
-	cpu = taken.select { |k,v| v == "O"}.keys
-	win = [[1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9], [1,5,9], [3,5,7]]
-	if win.include?(player)
-		return 'Player'
-	elsif win.include?(cpu)
-		return 'Computer'
-	end
+def draw_grid(g)
+  system 'clear'
+  puts "#{g[1]} |#{g[2]} |#{g[3]} "
+  puts "--+--+-- "
+  puts "#{g[4]} |#{g[5]} |#{g[6]} "
+  puts "--+--+-- "
+  puts "#{g[7]} |#{g[8]} |#{g[9]} "
 end
 
-#Game Board
-def grid(s)
-	system 'clear'
-	puts " #{s[1]} | #{s[2]} | #{s[3]} " 
-	puts " - + - + - "
-	puts " #{s[4]} | #{s[5]} | #{s[6]} " 
-	puts " - + - + - "
-	puts " #{s[7]} | #{s[8]} | #{s[9]} " 
+def empty_place(g)
+  g.select {|k,v| v == ' '}.keys #you just want the numbers 1-9 so calling .keys puts it into an array
 end
 
-#Select epmty space
-def empty_space(s)
-	s.select {|k, v| v == " "}.keys
+def players_pick(g)
+  puts "Pick a square between 1 and 9"
+  place = gets.chomp.to_i
+  g[place] = 'X'
 end
 
-#Users chooses position for where they play their move
-def player_move(choice, s)
-	loop do 
-		until empty_space(s).to_s.include?choice 
-		puts "Choose a number"
-		choice = gets.chomp
-		end
-		puts "This is a free space"
-		s[choice.to_i] = "x"
-		break
-	end
+def comp_pick(g)
+  place = empty_place(g).sample
+  g[place] = 'O'
 end
 
-#Computer will pick a random spot on the board that the user has not picked yet
-def ai_move(ai, s)
-	ai = empty_space(s).sample
-	s[ai] = "O"
+# This doesn't work and I'm sad now
+# def check_winner(g)
+#   winning_lines = [[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7],[1,2,3],[4,5,6],[7,8,9]]
+#   winning_lines[0..7].each do |line|
+#     if g[line].include?(['X','X','X'])
+#       return 'Player'
+#     elsif g[line[0]] == 'O' and g[line[1]] == 'O' and g[line[2]] == 'O'
+#       return 'Computer'
+#     else
+#       return nil
+#     end
+#   end
+# end
+
+def check_winner(g)
+ winning_lines = [[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7],[1,2,3],[4,5,6],[7,8,9]]
+   
+ winning_lines.each do |line|
+   if g[line[0]] == 'X' && g[line[1]] == 'X' && g[line[2]] == 'X'
+     return 'Player'
+   elsif g[line[0]] == 'O' and g[line[1]] == 'O' and g[line[2]] == 'O'
+     return 'Computer'
+   end
+ end
+ 
+ return nil
 end
 
 
+#Alternate Way Taras suggested
 
-s = space
-grid(s)
+# def check_winner(g)
+#  winning_lines = []
+#  [[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7],[1,2,3],[4,5,6],[7,8,9]].each_with_index do |line, line_index|
+#    winning_lines[line_index] = []
+#    line.each do |grid_spot|
+#      winning_lines[line_index] << g[grid_spot]
+#    end
+#  end
+ 
+#  if winning_lines.include? ['X', 'X', 'X']
+#    return 'Player'
+#  elsif winning_lines.include? ['O', 'O', 'O']
+#    return 'Computer'
+#  end
+ 
+#  return nil
+# end
+
+
+grid = init_grid #Keeps track of the state of the board
+draw_grid(grid)
+
 begin
-	player_move(choice, s)
-	ai_move(choice, s)
-	grid(s)
-	winner = win(s)
-end until empty_space(s).empty? || winner
+  players_pick(grid)
+  comp_pick(grid)
+  draw_grid(grid)
+  winner = check_winner(grid)
+end until empty_place(grid).empty? || winner
 
 if winner
   puts "#{winner} won!"
 else
   puts "It's a tie"
 end
-
-
-
